@@ -1,0 +1,23 @@
+{
+    "project_name": "AgroSpectra AI",
+    "crop_classification": {
+        "dataset": "EuroSAT RGB",
+        "classes": 10,
+        "test_accuracy_percent": 97.75
+    },
+    "vegetation_analysis": {
+        "method": "Sentinel-2 NDVI",
+        "bands": [
+            "B04 Red",
+            "B08 Near Infrared"
+        ],
+        "status": "Completed"
+    },
+    "photogrammetry": {
+        "software": "COLMAP",
+        "input_photos": 18,
+        "registered_cameras": 18,
+        "reconstructed_3d_points": 7130,
+        "output_file": "agrospectra_point_cloud.ply"
+    }
+}
