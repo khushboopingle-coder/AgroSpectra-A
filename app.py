@@ -1,10 +1,15 @@
+
 """
 AgroSpectra AI - Main Streamlit Application Entrypoint
 A nature-inspired, scientific geospatial and photogrammetry application.
 """
 
 import streamlit as st
+from pathlib import Path
 
+# --------------------------------------------------
+# PAGE CONFIGURATION
+# --------------------------------------------------
 st.set_page_config(
     page_title="AgroSpectra AI — Geospatial Crop Intelligence & 3D Photogrammetry",
     page_icon="🌿",
@@ -16,7 +21,6 @@ st.set_page_config(
 # STARTUP DIAGNOSTICS
 # --------------------------------------------------
 st.write("🌿 AgroSpectra AI is starting...")
-
 
 # --------------------------------------------------
 # LOAD STYLES
@@ -33,7 +37,6 @@ except Exception as exc:
     st.exception(exc)
     st.stop()
 
-
 # --------------------------------------------------
 # LOAD CONFIGURATION
 # --------------------------------------------------
@@ -43,7 +46,6 @@ except Exception as exc:
     st.error("Could not load the application configuration.")
     st.exception(exc)
     st.stop()
-
 
 # --------------------------------------------------
 # SIDEBAR NAVIGATION
@@ -71,7 +73,7 @@ with st.sidebar:
                         font-weight:500;
                         text-transform:uppercase;
                         letter-spacing:0.05em;
-                    ">Satellite & 3D Vision</span>
+                    ">Satellite &amp; 3D Vision</span>
                 </div>
             </div>
         </div>
@@ -106,6 +108,7 @@ with st.sidebar:
         "<div style='height:20px;'></div>",
         unsafe_allow_html=True,
     )
+
     st.markdown(
         "<div class='nature-divider'></div>",
         unsafe_allow_html=True,
@@ -127,8 +130,16 @@ with st.sidebar:
         unsafe_allow_html=True,
     )
 
-    model_loaded = MODEL_PATH.exists()
-    ply_loaded = POINT_CLOUD_PATH.exists()
+    # Check whether model and point-cloud files exist.
+    try:
+        model_loaded = Path(MODEL_PATH).exists()
+    except (TypeError, OSError):
+        model_loaded = False
+
+    try:
+        ply_loaded = Path(POINT_CLOUD_PATH).exists()
+    except (TypeError, OSError):
+        ply_loaded = False
 
     st.markdown(
         f"""
@@ -167,7 +178,10 @@ with st.sidebar:
         unsafe_allow_html=True,
     )
 
-    st.markdown("<div style='height:16px;'></div>", unsafe_allow_html=True)
+    st.markdown(
+        "<div style='height:16px;'></div>",
+        unsafe_allow_html=True,
+    )
 
     st.markdown(
         """
@@ -194,7 +208,6 @@ with st.sidebar:
         st.write(f"Model file exists: {'Yes' if model_loaded else 'No'}")
         st.write(f"Point-cloud file exists: {'Yes' if ply_loaded else 'No'}")
 
-
 # --------------------------------------------------
 # LOAD AND DISPLAY THE SELECTED PAGE
 # --------------------------------------------------
@@ -203,22 +216,27 @@ st.caption(f"Loading page: {selected_page}")
 try:
     if selected_page == "Executive Dashboard":
         from modules.dashboard import render_dashboard
+
         render_dashboard()
 
     elif selected_page == "AI Crop Classification":
         from modules.classifier import render_classifier
+
         render_classifier()
 
     elif selected_page == "Vegetation Health (NDVI)":
         from modules.vegetation import render_vegetation_health
+
         render_vegetation_health()
 
     elif selected_page == "3D Photogrammetry Viewer":
         from modules.reconstruction import render_3d_reconstruction
+
         render_3d_reconstruction()
 
     elif selected_page == "About & Scientific Methods":
         from modules.about import render_about
+
         render_about()
 
 except Exception as exc:
@@ -228,4 +246,3 @@ except Exception as exc:
         "Check the error above and the Streamlit Cloud logs "
         "to identify the module or file causing the problem."
     )
-```
