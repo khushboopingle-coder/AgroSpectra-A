@@ -1,4 +1,3 @@
-```python
 """
 AgroSpectra AI - Main Streamlit Application Entrypoint
 A nature-inspired, scientific geospatial and photogrammetry application.
@@ -6,9 +5,6 @@ A nature-inspired, scientific geospatial and photogrammetry application.
 
 import streamlit as st
 
-# --------------------------------------------------
-# PAGE CONFIGURATION — must be the first Streamlit call
-# --------------------------------------------------
 st.set_page_config(
     page_title="AgroSpectra AI — Geospatial Crop Intelligence & 3D Photogrammetry",
     page_icon="🌿",
