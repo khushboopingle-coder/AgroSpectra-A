@@ -38,6 +38,8 @@ def _image_data_uri(path: str) -> str:
             buf = io.BytesIO()
             if img.mode in ("RGBA", "P"):
                 img = img.convert("RGB")
+            # CHANGED: shrink big photos so the page loads fast
+            img.thumbnail((1600, 1600))
             img.save(buf, format="JPEG", quality=92, optimize=True)
             encoded = base64.b64encode(buf.getvalue()).decode()
             return f"data:image/jpeg;base64,{encoded}"
