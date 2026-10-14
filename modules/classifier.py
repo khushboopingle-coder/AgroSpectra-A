@@ -163,7 +163,7 @@ def render_classifier():
                     </div>
                     """, unsafe_allow_html=True)
 
-                    # NEW: plain-English summary
+                    # Plain-English summary
                     st.info(f"In simple words: the model is **{top_conf:.1f}% sure** this photo shows **{top_class}**.")
                     if top_conf > 99.9:
                         st.caption("100% means the model is very confident. It does not guarantee the answer is correct.")
@@ -205,7 +205,7 @@ def render_classifier():
                         ),
                         yaxis=dict(tickfont=dict(size=11, color="#1A2520"))
                     )
-                    # CHANGED: staticPlot stops users from dragging/zooming the chart
+                    # staticPlot stops users from dragging/zooming the chart
                     st.plotly_chart(fig_bar, use_container_width=True, config={"staticPlot": True})
 
                     # Full breakdown expander
@@ -231,28 +231,29 @@ def render_classifier():
         <div class="nature-card-sm">
             <h4 style="margin-top:0; margin-bottom:8px;">EuroSAT Confusion Matrix Evaluation</h4>
             <p style="color:var(--text-secondary); font-size:0.86rem; margin-bottom:14px;">
-                Evaluated on a 400-image test split from a 2,000-image EuroSAT subset. 
-                The model got <strong>391 of 400 correct (97.75%)</strong>. 
-                All 400 test images were Annual Crop (358) or Forest (42), so this result covers those 2 land types only. 
-                The other 8 land types were not tested here.
+                Evaluated on the separate 5,400-image EuroSAT test split, which the model never saw during training. 
+                The model got <strong>5,044 of 5,400 correct (93.41%)</strong>. 
+                The test set covers all 10 land-cover classes. 
+                The most common mix-up was Herbaceous Vegetation predicted as Permanent Crop (42 images), 
+                two land types that look similar from above.
             </p>
         """, unsafe_allow_html=True)
 
         cm_path = ASSETS_DIR / "confusion_matrix.png"
         if cm_path.exists():
             cm_img = Image.open(str(cm_path))
-            st.image(cm_img, caption="AgroSpectra AI - Confusion Matrix (400-image test split: Annual Crop and Forest only)", use_container_width=True)
+            st.image(cm_img, caption="AgroSpectra AI - Confusion Matrix (5,400-image test split, all 10 EuroSAT classes)", use_container_width=True)
         else:
             st.info("Confusion matrix asset not found.")
 
-        # NEW: simple explanation
+        # Simple explanation
         st.caption("This is a fixed report card. It was made once on test images, so it does not change when you pick a different photo above.")
         with st.expander("How to read this table"):
             st.markdown(
                 "- **Each row** is the real land type.\n"
                 "- **Each column** is what the model guessed.\n"
                 "- **The diagonal** (top-left to bottom-right) shows correct answers. Bigger numbers there are better.\n"
-                "- **Any number outside the diagonal** is a mistake. Example: a 5 in the *Annual Crop* row and *Forest* column means 5 farm photos were wrongly called Forest."
+                "- **Any number outside the diagonal** is a mistake. Example: a 42 in the *Herbaceous Vegetation* row and *Permanent Crop* column means 42 grassland photos were wrongly called Permanent Crop."
             )
         st.markdown("</div>", unsafe_allow_html=True)
 
@@ -265,78 +266,99 @@ def render_classifier():
                     <th style="padding:6px;">Layer Type</th>
                     <th style="padding:6px;">Output Shape</th>
                     <th style="padding:6px;">Parameters</th>
-                    <th style="padding:6px;">Activation</th>
                 </tr>
                 <tr style="border-bottom:1px solid var(--warm-border);">
-                    <td style="padding:6px;">Input Layer</td>
+                    <td style="padding:6px;">RandomFlip (training only)</td>
                     <td style="padding:6px;">(64, 64, 3)</td>
                     <td style="padding:6px;">0</td>
-                    <td style="padding:6px;">—</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--warm-border);">
+                    <td style="padding:6px;">RandomRotation (training only)</td>
+                    <td style="padding:6px;">(64, 64, 3)</td>
+                    <td style="padding:6px;">0</td>
                 </tr>
                 <tr style="border-bottom:1px solid var(--warm-border);">
                     <td style="padding:6px;">Conv2D (32 filters, 3×3)</td>
-                    <td style="padding:6px;">(62, 62, 32)</td>
+                    <td style="padding:6px;">(64, 64, 32)</td>
                     <td style="padding:6px;">896</td>
-                    <td style="padding:6px;">ReLU</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--warm-border);">
+                    <td style="padding:6px;">BatchNormalization</td>
+                    <td style="padding:6px;">(64, 64, 32)</td>
+                    <td style="padding:6px;">128</td>
                 </tr>
                 <tr style="border-bottom:1px solid var(--warm-border);">
                     <td style="padding:6px;">MaxPooling2D (2×2)</td>
-                    <td style="padding:6px;">(31, 31, 32)</td>
+                    <td style="padding:6px;">(32, 32, 32)</td>
                     <td style="padding:6px;">0</td>
-                    <td style="padding:6px;">—</td>
                 </tr>
                 <tr style="border-bottom:1px solid var(--warm-border);">
                     <td style="padding:6px;">Conv2D (64 filters, 3×3)</td>
-                    <td style="padding:6px;">(29, 29, 64)</td>
+                    <td style="padding:6px;">(32, 32, 64)</td>
                     <td style="padding:6px;">18,496</td>
-                    <td style="padding:6px;">ReLU</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--warm-border);">
+                    <td style="padding:6px;">BatchNormalization</td>
+                    <td style="padding:6px;">(32, 32, 64)</td>
+                    <td style="padding:6px;">256</td>
                 </tr>
                 <tr style="border-bottom:1px solid var(--warm-border);">
                     <td style="padding:6px;">MaxPooling2D (2×2)</td>
-                    <td style="padding:6px;">(14, 14, 64)</td>
+                    <td style="padding:6px;">(16, 16, 64)</td>
                     <td style="padding:6px;">0</td>
-                    <td style="padding:6px;">—</td>
                 </tr>
                 <tr style="border-bottom:1px solid var(--warm-border);">
-                    <td style="padding:6px;">Flatten</td>
-                    <td style="padding:6px;">(12,544)</td>
+                    <td style="padding:6px;">Conv2D (128 filters, 3×3)</td>
+                    <td style="padding:6px;">(16, 16, 128)</td>
+                    <td style="padding:6px;">73,856</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--warm-border);">
+                    <td style="padding:6px;">BatchNormalization</td>
+                    <td style="padding:6px;">(16, 16, 128)</td>
+                    <td style="padding:6px;">512</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--warm-border);">
+                    <td style="padding:6px;">MaxPooling2D (2×2)</td>
+                    <td style="padding:6px;">(8, 8, 128)</td>
                     <td style="padding:6px;">0</td>
-                    <td style="padding:6px;">—</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--warm-border);">
+                    <td style="padding:6px;">GlobalAveragePooling2D</td>
+                    <td style="padding:6px;">(128)</td>
+                    <td style="padding:6px;">0</td>
                 </tr>
                 <tr style="border-bottom:1px solid var(--warm-border);">
                     <td style="padding:6px;">Dense (128 units)</td>
                     <td style="padding:6px;">(128)</td>
-                    <td style="padding:6px;">1,605,760</td>
-                    <td style="padding:6px;">ReLU</td>
+                    <td style="padding:6px;">16,512</td>
                 </tr>
                 <tr style="border-bottom:1px solid var(--warm-border);">
-                    <td style="padding:6px;">Dropout (0.30 rate)</td>
+                    <td style="padding:6px;">Dropout</td>
                     <td style="padding:6px;">(128)</td>
                     <td style="padding:6px;">0</td>
-                    <td style="padding:6px;">—</td>
                 </tr>
                 <tr>
-                    <td style="padding:6px;">Dense (10 units)</td>
+                    <td style="padding:6px;">Dense (10 units, Softmax)</td>
                     <td style="padding:6px;">(10)</td>
                     <td style="padding:6px;">1,290</td>
-                    <td style="padding:6px;">Softmax</td>
                 </tr>
             </table>
             <div style="margin-top:12px; font-size:0.83rem; color:var(--text-muted);">
-                <strong>Total Trainable Parameters:</strong> 1,626,442 (6.20 MB) · Optimizer: Adam · Loss: Sparse Categorical Crossentropy
+                <strong>Trainable Parameters:</strong> 111,498 (435.54 KB) · <strong>Non-trainable:</strong> 448 (BatchNorm statistics) · Optimizer: Adam · Loss: Sparse Categorical Crossentropy
             </div>
         </div>
         """, unsafe_allow_html=True)
 
-        # NEW: simple explanation
+        # Simple explanation
         with st.expander("What is a CNN? (simple words)"):
             st.markdown(
                 "A **CNN** (Convolutional Neural Network) is an AI built to understand pictures. Reading the table top to bottom:\n"
-                "- **Input:** the photo, 64×64 pixels, 3 colors.\n"
+                "- **RandomFlip / RandomRotation:** during training, photos are randomly flipped and turned so the model learns to recognize land from any angle.\n"
                 "- **Conv2D:** small filters slide over the photo and find patterns like edges and textures.\n"
+                "- **BatchNormalization:** keeps the numbers in a steady range so the model learns faster and more reliably.\n"
                 "- **MaxPooling:** shrinks the picture and keeps only the strongest patterns.\n"
-                "- **Flatten:** turns the result into one long list of numbers.\n"
-                "- **Dense:** the thinking layers that combine all the patterns.\n"
+                "- **GlobalAveragePooling:** squeezes each pattern map into one average number, giving a short list of 128 numbers.\n"
+                "- **Dense:** the thinking layer that combines all the patterns.\n"
                 "- **Dropout:** switches off some neurons while training so the model does not just memorize.\n"
                 "- **Dense (10) + Softmax:** gives the final score for each of the 10 land types."
             )
