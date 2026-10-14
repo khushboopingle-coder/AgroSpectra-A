@@ -51,16 +51,16 @@ CLASS_DESCRIPTIONS = {
 
 # Scientific Disclosures & Transparency Notes
 DISCLOSURES = {
-    "crop_accuracy": "EuroSAT test accuracy was evaluated on a 2,000-image test subset (80/20 stratified split) from the EuroSAT RGB dataset, achieving 97.75% test accuracy across 10 classes.",
+    "crop_accuracy": "The CNN was trained on the 16,200-image EuroSAT RGB training split (10% held out for validation) and evaluated on the separate 5,400-image test split covering all 10 land-cover classes, achieving 93.41% test accuracy.",
     "point_cloud_origin": "The 3D point cloud (7,130 vertices) was reconstructed using COLMAP Structure-from-Motion (SfM) on 18 aerial drone photos from the Brighton Beach benchmark dataset. It serves as an algorithmic proof-of-concept for drone photogrammetry and topographical modeling, not active agricultural cropland.",
     "ndvi_band_info": "Vegetation index calculated using Sentinel-2 MSI Level-2A surface reflectance: Band 4 (Red, center ~665 nm, 10 m resolution) and Band 8 (Near-Infrared, center ~842 nm, 10 m resolution)."
 }
 
 # Key Metrics from project_results.json
 KEY_METRICS = {
-    "test_accuracy": "97.75%",
+    "test_accuracy": "93.41%",
     "num_classes": 10,
-    "eval_subset_size": "2,000 images",
+    "eval_subset_size": "5,400 images (test split)",
     "model_input_dim": "64 × 64 × 3",
     "ndvi_bands": "B04 (Red) + B08 (NIR)",
     "photogrammetry_points": "7,130",
