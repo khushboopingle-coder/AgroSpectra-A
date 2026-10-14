@@ -38,7 +38,10 @@ h1, h2, h3, h4 {
 }
 hr { border-color: var(--line) !important; }
 
-.block-container { padding-top: 2.2rem !important; max-width: 1180px; }
+/* CHANGED: was 2.2rem. Streamlit's top header bar is about 3.75rem tall,
+   so 2.2rem hid the top edge of the first banner behind it.
+   4.5rem keeps the whole banner (and its top border) visible. */
+.block-container { padding-top: 4.5rem !important; max-width: 1180px; }
 
 /* ---------- Top header bar (was black) ---------- */
 [data-testid="stHeader"] {
