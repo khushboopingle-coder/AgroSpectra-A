@@ -163,8 +163,14 @@ def render_classifier():
                     </div>
                     """, unsafe_allow_html=True)
 
+                    # NEW: plain-English summary
+                    st.info(f"In simple words: the model is **{top_conf:.1f}% sure** this photo shows **{top_class}**.")
+                    if top_conf > 99.9:
+                        st.caption("100% means the model is very confident. It does not guarantee the answer is correct.")
+
                     # Confidence Distribution Horizontal Bar Chart
                     st.markdown("<strong style='font-size:0.88rem; color:var(--forest-deep);'>Class Confidence Distribution:</strong>", unsafe_allow_html=True)
+                    st.caption("The model shares 100 points between the land types. The longest bar is its answer.")
                     
                     df_plot = [
                         {"Class": p["class"], "Confidence": p["confidence"]}
@@ -199,7 +205,8 @@ def render_classifier():
                         ),
                         yaxis=dict(tickfont=dict(size=11, color="#1A2520"))
                     )
-                    st.plotly_chart(fig_bar, use_container_width=True)
+                    # CHANGED: staticPlot stops users from dragging/zooming the chart
+                    st.plotly_chart(fig_bar, use_container_width=True, config={"staticPlot": True})
 
                     # Full breakdown expander
                     with st.expander("View All 10 Class Probabilities"):
@@ -224,17 +231,29 @@ def render_classifier():
         <div class="nature-card-sm">
             <h4 style="margin-top:0; margin-bottom:8px;">EuroSAT Confusion Matrix Evaluation</h4>
             <p style="color:var(--text-secondary); font-size:0.86rem; margin-bottom:14px;">
-                Evaluation results on the 2,000-image EuroSAT benchmark subset (test split = 400 images). 
-                The model achieved <strong>97.75% test accuracy</strong> with strong separation between agricultural fields, pastures, and woodland.
+                Evaluated on a 400-image test split from a 2,000-image EuroSAT subset. 
+                The model got <strong>391 of 400 correct (97.75%)</strong>. 
+                All 400 test images were Annual Crop (358) or Forest (42), so this result covers those 2 land types only. 
+                The other 8 land types were not tested here.
             </p>
         """, unsafe_allow_html=True)
 
         cm_path = ASSETS_DIR / "confusion_matrix.png"
         if cm_path.exists():
             cm_img = Image.open(str(cm_path))
-            st.image(cm_img, caption="AgroSpectra AI - Confusion Matrix (EuroSAT 10-Class Test Subset)", use_container_width=True)
+            st.image(cm_img, caption="AgroSpectra AI - Confusion Matrix (400-image test split: Annual Crop and Forest only)", use_container_width=True)
         else:
             st.info("Confusion matrix asset not found.")
+
+        # NEW: simple explanation
+        st.caption("This is a fixed report card. It was made once on test images, so it does not change when you pick a different photo above.")
+        with st.expander("How to read this table"):
+            st.markdown(
+                "- **Each row** is the real land type.\n"
+                "- **Each column** is what the model guessed.\n"
+                "- **The diagonal** (top-left to bottom-right) shows correct answers. Bigger numbers there are better.\n"
+                "- **Any number outside the diagonal** is a mistake. Example: a 5 in the *Annual Crop* row and *Forest* column means 5 farm photos were wrongly called Forest."
+            )
         st.markdown("</div>", unsafe_allow_html=True)
 
     with tab2:
@@ -308,3 +327,16 @@ def render_classifier():
             </div>
         </div>
         """, unsafe_allow_html=True)
+
+        # NEW: simple explanation
+        with st.expander("What is a CNN? (simple words)"):
+            st.markdown(
+                "A **CNN** (Convolutional Neural Network) is an AI built to understand pictures. Reading the table top to bottom:\n"
+                "- **Input:** the photo, 64×64 pixels, 3 colors.\n"
+                "- **Conv2D:** small filters slide over the photo and find patterns like edges and textures.\n"
+                "- **MaxPooling:** shrinks the picture and keeps only the strongest patterns.\n"
+                "- **Flatten:** turns the result into one long list of numbers.\n"
+                "- **Dense:** the thinking layers that combine all the patterns.\n"
+                "- **Dropout:** switches off some neurons while training so the model does not just memorize.\n"
+                "- **Dense (10) + Softmax:** gives the final score for each of the 10 land types."
+            )
