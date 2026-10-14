@@ -38,17 +38,17 @@ h1, h2, h3, h4 {
 }
 hr { border-color: var(--line) !important; }
 
-/* CHANGED: was 2.2rem. Streamlit's top header bar is about 3.75rem tall,
-   so 2.2rem hid the top edge of the first banner behind it.
-   4.5rem keeps the whole banner (and its top border) visible. */
-.block-container { padding-top: 4.5rem !important; max-width: 1180px; }
+/* CHANGED: 4rem keeps the banner's top edge visible below Streamlit's
+   header bar, with a smaller gap than before (was 4.5rem). */
+.block-container { padding-top: 4rem !important; max-width: 1180px; }
 
 /* ---------- Top header bar (was black) ---------- */
 [data-testid="stHeader"] {
     background: rgba(246, 248, 243, 0.92) !important;
     backdrop-filter: blur(6px);
 }
-[data-testid="stHeader"] *, [data-testid="stToolbar"] * { color: var(--ink) !important; }
+[data-testid="stHeader"] *, [data-testid="stToolbar"] * { color: var(--ink) !important; opacity: 1 !important; }
+[data-testid="stHeader"] svg, [data-testid="stToolbar"] svg { fill: var(--ink) !important; }
 [data-testid="stDecoration"] { display: none; }
 
 /* ---------- Sidebar ---------- */
@@ -59,31 +59,40 @@ hr { border-color: var(--line) !important; }
 [data-testid="stSidebar"] * { color: var(--ink); }
 [data-testid="stSidebar"] h2 { font-size: 1.3rem !important; }
 
-/* Navigation radio -> clean nav list */
-[data-testid="stSidebar"] div[role="radiogroup"] { gap: 4px; }
-[data-testid="stSidebar"] div[role="radiogroup"] > label {
+/* Navigation radio -> clean nav list
+   CHANGED: broader selectors (no direct-child ">") so they match however
+   Streamlit nests the radio items, plus opacity:1 so text is never faded. */
+[data-testid="stSidebar"] [role="radiogroup"] { gap: 4px; }
+[data-testid="stSidebar"] [role="radiogroup"] label {
     background: transparent;
     border: 1px solid transparent;
     border-radius: 8px;
     padding: 9px 12px;
     width: 100%;
     cursor: pointer;
+    opacity: 1 !important;
     transition: background .15s ease;
 }
-[data-testid="stSidebar"] div[role="radiogroup"] > label:hover { background: rgba(47,107,63,.08); }
-/* hide the dot */
-[data-testid="stSidebar"] div[role="radiogroup"] > label > div:first-child { display: none !important; }
-[data-testid="stSidebar"] div[role="radiogroup"] > label p {
+[data-testid="stSidebar"] [role="radiogroup"] label:hover { background: rgba(47,107,63,.08); }
+/* hide the round dot (first div inside each item) */
+[data-testid="stSidebar"] [role="radiogroup"] label > div:first-of-type { display: none !important; }
+/* readable text for every nav item */
+[data-testid="stSidebar"] [role="radiogroup"] label,
+[data-testid="stSidebar"] [role="radiogroup"] label *,
+[data-testid="stSidebar"] [role="radiogroup"] label p {
     color: var(--ink) !important;
+    opacity: 1 !important;
     font-size: 0.94rem;
     font-weight: 500;
 }
 /* active page */
-[data-testid="stSidebar"] div[role="radiogroup"] > label:has(input:checked) {
-    background: var(--green);
+[data-testid="stSidebar"] [role="radiogroup"] label:has(input:checked) {
+    background: var(--green) !important;
     border-color: var(--green);
 }
-[data-testid="stSidebar"] div[role="radiogroup"] > label:has(input:checked) p {
+[data-testid="stSidebar"] [role="radiogroup"] label:has(input:checked),
+[data-testid="stSidebar"] [role="radiogroup"] label:has(input:checked) *,
+[data-testid="stSidebar"] [role="radiogroup"] label:has(input:checked) p {
     color: #FFFFFF !important;
     font-weight: 600;
 }
@@ -133,9 +142,11 @@ hr { border-color: var(--line) !important; }
     justify-content: flex-end;
     padding: 38px 44px;
 }
+/* CHANGED: min-height 350px -> 480px so less of the photo is cut off,
+   and the focus point moved up a little (center 40%). */
 .hero-banner {
     position: relative;
-    min-height: 350px;
+    min-height: 480px;
     border-radius: 14px;
     overflow: hidden;
     padding: 48px 44px;
@@ -143,7 +154,7 @@ hr { border-color: var(--line) !important; }
     flex-direction: column;
     justify-content: flex-end;
     background-size: cover, cover !important;
-    background-position: center 48%, center 48% !important;
+    background-position: center 40%, center 40% !important;
     background-repeat: no-repeat, no-repeat !important;
     background-color: var(--green-dark);
     margin-bottom: 24px;
@@ -247,7 +258,7 @@ hr { border-color: var(--line) !important; }
 [data-testid="stMetricValue"], [data-testid="stMetricLabel"] { color: var(--ink) !important; }
 
 @media (max-width: 720px) {
-    .hero-banner { padding: 32px 22px; min-height: 300px; }
+    .hero-banner { padding: 32px 22px; min-height: 340px; }
     .hero-title { font-size: 2.3rem; }
 }
 </style>
