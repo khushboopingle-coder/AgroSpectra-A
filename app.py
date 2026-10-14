@@ -20,7 +20,6 @@ st.set_page_config(
 # --------------------------------------------------
 # STARTUP DIAGNOSTICS
 # --------------------------------------------------
-st.write("🌿 AgroSpectra AI is starting...")
 
 # --------------------------------------------------
 # LOAD STYLES
@@ -211,7 +210,6 @@ with st.sidebar:
 # --------------------------------------------------
 # LOAD AND DISPLAY THE SELECTED PAGE
 # --------------------------------------------------
-st.caption(f"Loading page: {selected_page}")
 
 try:
     if selected_page == "Executive Dashboard":
