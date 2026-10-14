@@ -74,8 +74,6 @@ hr { border-color: var(--line) !important; }
     transition: background .15s ease;
 }
 [data-testid="stSidebar"] [role="radiogroup"] label:hover { background: rgba(47,107,63,.08); }
-/* hide the round dot (first div inside each item) */
-[data-testid="stSidebar"] [role="radiogroup"] label > div:first-of-type { display: none !important; }
 /* readable text for every nav item */
 [data-testid="stSidebar"] [role="radiogroup"] label,
 [data-testid="stSidebar"] [role="radiogroup"] label *,
